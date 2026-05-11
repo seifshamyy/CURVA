@@ -63,6 +63,7 @@ class Orchestrator:
                 locale=req.locale,
                 context_block=context_block,
                 finalize_tool_name=FINALIZE_TOOL_NAME,
+                finalize_tool_spec=FINALIZE_TOOL_SPEC,
             )
         except LoopExceeded:
             log.warning("loop_exceeded", session_id=req.session_id)

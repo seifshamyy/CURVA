@@ -39,6 +39,7 @@ async def run_tool_loop(
     locale: str = "ar",
     context_block: str | None = None,
     finalize_tool_name: str | None = None,
+    finalize_tool_spec: dict[str, Any] | None = None,
 ) -> ToolLoopResult:
     messages: list[LLMMessage] = []
     if context_block:
@@ -46,6 +47,8 @@ async def run_tool_loop(
     messages.append(LLMMessage(role="user", content=user_message))
 
     tool_specs = [t.tool_spec() for t in tools.values()]
+    if finalize_tool_spec and finalize_tool_name:
+        tool_specs.append(finalize_tool_spec)
     observability: list[dict[str, Any]] = []
     totals: dict[str, int] = {"prompt_tokens": 0, "completion_tokens": 0, "cached_tokens": 0}
 
