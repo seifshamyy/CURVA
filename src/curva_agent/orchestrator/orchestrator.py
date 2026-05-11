@@ -64,7 +64,6 @@ class Orchestrator:
                 context_block=context_block,
                 finalize_tool_name=FINALIZE_TOOL_NAME,
                 finalize_tool_spec=FINALIZE_TOOL_SPEC,
-                finalize_args_model=FinalizeArgs,
             )
         except LoopExceeded:
             log.warning("loop_exceeded", session_id=req.session_id)
@@ -84,7 +83,11 @@ class Orchestrator:
             log.error("finalize_invalid", error=str(e), args=final_call.arguments)
             return self._handoff_fallback(f"invalid finalize args: {e}"), NextSessionState()
 
-        response = args.public
+        if not args.reply_text:
+            log.warning("finalize_empty_reply", args=final_call.arguments)
+            return self._wrap_freeform(loop_result.final_text), NextSessionState()
+
+        response = args.to_response()
         response.diagnostics = Diagnostics(
             tool_calls=len(loop_result.tool_calls_made),
             synthesizer_invoked=any(
@@ -99,7 +102,7 @@ class Orchestrator:
             completion_tokens=loop_result.total_usage.get("completion_tokens", 0),
             cached_tokens=loop_result.total_usage.get("cached_tokens", 0),
         )
-        return response, args.next_session_state
+        return response, args.to_session_state()
 
     def _wrap_freeform(self, text: str) -> AgentQueryResponse:
         return AgentQueryResponse(

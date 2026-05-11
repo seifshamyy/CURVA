@@ -8,8 +8,9 @@ FINALIZE_TOOL_SPEC = {
     "function": {
         "name": FINALIZE_TOOL_NAME,
         "description": (
-            "REQUIRED final tool call. Emits the structured response to the customer "
-            "and the updated session state. After calling this you MUST stop — do "
+            "REQUIRED final tool call. Provide the customer-facing reply (reply_text, products, "
+            "follow_up_suggestions, intent) and session state (focus_product_ids, "
+            "conversation_summary) as top-level fields. After calling this you MUST stop — do "
             "not call any further tools."
         ),
         "parameters": FinalizeArgs.model_json_schema(),

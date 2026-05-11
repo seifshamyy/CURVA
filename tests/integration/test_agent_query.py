@@ -54,16 +54,18 @@ async def test_agent_query_invokes_search_and_finalizes():
     stub_logs_repo = AgentLogsRepository(_LogsStubSupabase())
 
     fake_llm = AsyncMock()
-    public_args = {
+    finalize_args = {
         "reply_text": "عندنا قمصان زمالك",
         "products": [],
         "follow_up_suggestions": [],
         "intent": "search",
+        "focus_product_ids": [10307],
+        "last_filters": {"club_id": 26},
+        "conversation_summary": "asked about Zamalek",
     }
-    session_state_args = {"focus_product_ids": [10307], "last_filters": {"club_id": 26}, "conversation_summary": "asked about Zamalek"}
     fake_llm.complete = AsyncMock(side_effect=[
         LLMResponse(text="", tool_calls=[LLMToolCall(id="c1", name="search_products", arguments={"club_id": 26, "limit": 5, "page": 1})], finish_reason="tool_calls", usage={"prompt_tokens": 10}),
-        LLMResponse(text="", tool_calls=[LLMToolCall(id="c2", name="finalize_response", arguments={"public": public_args, "next_session_state": session_state_args})], finish_reason="tool_calls", usage={"prompt_tokens": 12}),
+        LLMResponse(text="", tool_calls=[LLMToolCall(id="c2", name="finalize_response", arguments=finalize_args)], finish_reason="tool_calls", usage={"prompt_tokens": 12}),
     ])
 
     stub_orchestrator = Orchestrator(

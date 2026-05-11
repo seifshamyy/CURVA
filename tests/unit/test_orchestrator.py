@@ -19,22 +19,30 @@ def _snap() -> TaxonomySnapshot:
     )
 
 
-def _finalize_call(public: dict, session: dict) -> LLMToolCall:
+def _finalize_call(**kwargs) -> LLMToolCall:
+    defaults = {
+        "reply_text": "",
+        "products": [],
+        "follow_up_suggestions": [],
+        "intent": "search",
+        "focus_product_ids": [],
+        "last_filters": None,
+        "conversation_summary": "",
+    }
+    defaults.update(kwargs)
     return LLMToolCall(
         id="final_1", name="finalize_response",
-        arguments={"public": public, "next_session_state": session},
+        arguments=defaults,
     )
 
 
 @pytest.mark.asyncio
 async def test_orchestrator_returns_validated_response_from_finalize():
     llm = AsyncMock()
-    public = {
-        "reply_text": "تمام", "products": [], "follow_up_suggestions": [], "intent": "smalltalk",
-    }
-    session = {"focus_product_ids": [], "last_filters": None, "conversation_summary": "hi"}
     llm.complete = AsyncMock(return_value=LLMResponse(
-        text="", tool_calls=[_finalize_call(public, session)], finish_reason="tool_calls", usage={},
+        text="", tool_calls=[_finalize_call(
+            reply_text="تمام", intent="smalltalk", conversation_summary="hi",
+        )], finish_reason="tool_calls", usage={},
     ))
 
     orch = Orchestrator(llm=llm, tools={}, snapshot_loader=AsyncMock(return_value=_snap()), model_name="test-model")

@@ -75,7 +75,6 @@ class AgentQueryResponse(_Base):
     diagnostics: Diagnostics | None = None
 
 
-# ---------- finalize_response tool args ----------
 class NextSessionState(_Base):
     focus_product_ids: list[int] = Field(default_factory=list)
     last_filters: dict[str, Any] | None = None
@@ -83,5 +82,25 @@ class NextSessionState(_Base):
 
 
 class FinalizeArgs(_Base):
-    public: AgentQueryResponse
-    next_session_state: NextSessionState
+    reply_text: str = ""
+    products: list[ProductCard] = Field(default_factory=list)
+    follow_up_suggestions: list[str] = Field(default_factory=list)
+    intent: Intent = "search"
+    focus_product_ids: list[int] = Field(default_factory=list)
+    last_filters: dict[str, Any] | None = None
+    conversation_summary: str = ""
+
+    def to_response(self) -> AgentQueryResponse:
+        return AgentQueryResponse(
+            reply_text=self.reply_text,
+            products=self.products,
+            follow_up_suggestions=self.follow_up_suggestions,
+            intent=self.intent,
+        )
+
+    def to_session_state(self) -> NextSessionState:
+        return NextSessionState(
+            focus_product_ids=self.focus_product_ids,
+            last_filters=self.last_filters,
+            conversation_summary=self.conversation_summary,
+        )

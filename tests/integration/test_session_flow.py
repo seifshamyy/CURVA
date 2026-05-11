@@ -20,8 +20,16 @@ def _snap():
     )
 
 
-def _finalize(public, session):
-    return LLMToolCall(id="f", name="finalize_response", arguments={"public": public, "next_session_state": session})
+def _finalize(reply_text, intent, *, focus_product_ids=None, last_filters=None, conversation_summary=""):
+    return LLMToolCall(id="f", name="finalize_response", arguments={
+        "reply_text": reply_text,
+        "products": [],
+        "follow_up_suggestions": [],
+        "intent": intent,
+        "focus_product_ids": focus_product_ids or [],
+        "last_filters": last_filters,
+        "conversation_summary": conversation_summary,
+    })
 
 
 @pytest.mark.asyncio
@@ -33,8 +41,10 @@ async def test_session_focus_carries_across_turns():
     llm = AsyncMock()
     llm.complete = AsyncMock(return_value=LLMResponse(
         text="", tool_calls=[_finalize(
-            public={"reply_text": "ها هو", "products": [], "follow_up_suggestions": [], "intent": "search"},
-            session={"focus_product_ids": [10307], "last_filters": {"club_id": 26}, "conversation_summary": "Showed Zamalek jersey"},
+            "ها هو", "search",
+            focus_product_ids=[10307],
+            last_filters={"club_id": 26},
+            conversation_summary="Showed Zamalek jersey",
         )], finish_reason="tool_calls", usage={},
     ))
 
@@ -60,8 +70,9 @@ async def test_session_focus_carries_across_turns():
     # Turn 2: ensure the orchestrator now sees focus_product_ids=[10307]
     llm.complete = AsyncMock(return_value=LLMResponse(
         text="", tool_calls=[_finalize(
-            public={"reply_text": "اللون أحمر متاح", "products": [], "follow_up_suggestions": [], "intent": "detail"},
-            session={"focus_product_ids": [10307], "last_filters": None, "conversation_summary": "Confirmed red color in stock"},
+            "اللون أحمر متاح", "detail",
+            focus_product_ids=[10307],
+            conversation_summary="Confirmed red color in stock",
         )], finish_reason="tool_calls", usage={},
     ))
     req2 = AgentQueryRequest(session_id="20100", user_message="الأحمر متاح؟", locale="ar")
