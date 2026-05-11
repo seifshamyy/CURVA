@@ -64,6 +64,7 @@ class Orchestrator:
                 context_block=context_block,
                 finalize_tool_name=FINALIZE_TOOL_NAME,
                 finalize_tool_spec=FINALIZE_TOOL_SPEC,
+                finalize_args_model=FinalizeArgs,
             )
         except LoopExceeded:
             log.warning("loop_exceeded", session_id=req.session_id)

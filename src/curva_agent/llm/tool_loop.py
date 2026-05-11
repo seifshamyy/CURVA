@@ -2,9 +2,9 @@
 import asyncio
 import time
 from dataclasses import dataclass, field
-from typing import Any
+from typing import Any, Type
 import orjson
-from pydantic import ValidationError
+from pydantic import BaseModel, ValidationError
 from curva_agent.llm.client import LLMClient, LLMMessage, LLMResponse, LLMToolCall
 from curva_agent.observability.logging import get_logger
 from curva_agent.tools.base import Tool
@@ -40,6 +40,7 @@ async def run_tool_loop(
     context_block: str | None = None,
     finalize_tool_name: str | None = None,
     finalize_tool_spec: dict[str, Any] | None = None,
+    finalize_args_model: Type[BaseModel] | None = None,
 ) -> ToolLoopResult:
     messages: list[LLMMessage] = []
     if context_block:
@@ -60,6 +61,24 @@ async def run_tool_loop(
             totals[k] += resp.usage.get(k, 0)
 
         if finalize_tool_name and any(tc.name == finalize_tool_name for tc in resp.tool_calls):
+            final_call = next(tc for tc in resp.tool_calls if tc.name == finalize_tool_name)
+            if finalize_args_model:
+                try:
+                    finalize_args_model.model_validate(final_call.arguments)
+                except ValidationError as ve:
+                    log.warning("finalize_retry", error=str(ve), args=final_call.arguments, iteration=iteration)
+                    messages.append(LLMMessage(
+                        role="assistant",
+                        content=resp.text or None,
+                        tool_calls=[LLMClient.serialize_tool_call(tc) for tc in resp.tool_calls],
+                    ))
+                    err = orjson.dumps({"error": f"finalize_response validation failed: {ve}. You MUST provide 'public' (with reply_text, products, follow_up_suggestions, intent) and 'next_session_state' fields."}).decode()
+                    messages.append(LLMMessage(role="tool", tool_call_id=final_call.id, name=final_call.name, content=err))
+                    observability.append({"name": final_call.name, "args": final_call.arguments, "ok": False, "error": str(ve), "latency_ms": 0, "iteration": iteration, "finalize_retry": True})
+                    for tc in resp.tool_calls:
+                        if tc.name != finalize_tool_name:
+                            messages.append(LLMMessage(role="tool", tool_call_id=tc.id, name=tc.name, content=orjson.dumps({"skipped": True, "reason": "retry_after_finalize_error"}).decode()))
+                    continue
             return ToolLoopResult(
                 final_text=resp.text,
                 final_tool_calls=resp.tool_calls,
