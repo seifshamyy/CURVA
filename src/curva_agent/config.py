@@ -9,7 +9,7 @@ class Settings(BaseSettings):
 
     # LLM
     openrouter_api_key: str = Field(...)
-    llm_model: str = "anthropic/claude-sonnet-4.6"
+    llm_model: str = "openai/gpt-5.4-nano"
     llm_max_tool_iterations: int = 12
 
     # Supabase
