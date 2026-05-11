@@ -53,9 +53,9 @@ async def sync_taxonomy(*, curva: CurvaClient, repo: TaxonomyRepository) -> Sync
         log.error("sync_categories_failed", error=str(e))
 
     try:
-        clubs_ar = await curva.get_clubs(limit=200, page=1, locale="ar")
-        clubs_en = await curva.get_clubs(limit=200, page=1, locale="en")
-        en_by_id = {c.id: c.name for c in clubs_en.data.data}
+        all_clubs_ar = await _paginate_clubs(curva, locale="ar")
+        all_clubs_en = await _paginate_clubs(curva, locale="en")
+        en_by_id = {c.id: c.name for c in all_clubs_en}
         club_rows = [
             ClubRow(
                 id=c.id,
@@ -66,7 +66,7 @@ async def sync_taxonomy(*, curva: CurvaClient, repo: TaxonomyRepository) -> Sync
                 image=c.image,
                 orders_count=c.orders,
             )
-            for c in clubs_ar.data.data
+            for c in all_clubs_ar
         ]
         await repo.upsert_clubs(club_rows)
         counts["clubs"] = len(club_rows)
@@ -75,9 +75,9 @@ async def sync_taxonomy(*, curva: CurvaClient, repo: TaxonomyRepository) -> Sync
         log.error("sync_clubs_failed", error=str(e))
 
     try:
-        brands_ar = await curva.get_brands(limit=200, page=1, locale="ar")
-        brands_en = await curva.get_brands(limit=200, page=1, locale="en")
-        en_by_id = {b.id: b.name for b in brands_en.data.data}
+        all_brands_ar = await _paginate_brands(curva, locale="ar")
+        all_brands_en = await _paginate_brands(curva, locale="en")
+        en_by_id = {b.id: b.name for b in all_brands_en}
         brand_rows = [
             BrandRow(
                 id=b.id,
@@ -86,7 +86,7 @@ async def sync_taxonomy(*, curva: CurvaClient, repo: TaxonomyRepository) -> Sync
                 image=b.image,
                 orders_count=b.orders,
             )
-            for b in brands_ar.data.data
+            for b in all_brands_ar
         ]
         await repo.upsert_brands(brand_rows)
         counts["brands"] = len(brand_rows)
@@ -127,3 +127,29 @@ async def record_sync_run(supabase: Any, started_at: str, result: SyncResult) ->
             "error": result.error,
         }
     ).execute()
+
+
+async def _paginate_clubs(curva: CurvaClient, *, locale: str) -> list[Any]:
+    """Fetch all clubs across all pages."""
+    all_items: list[Any] = []
+    page = 1
+    while True:
+        resp = await curva.get_clubs(limit=200, page=page, locale=locale)
+        all_items.extend(resp.data.data)
+        if page >= resp.data.last_page:
+            break
+        page += 1
+    return all_items
+
+
+async def _paginate_brands(curva: CurvaClient, *, locale: str) -> list[Any]:
+    """Fetch all brands across all pages."""
+    all_items: list[Any] = []
+    page = 1
+    while True:
+        resp = await curva.get_brands(limit=200, page=page, locale=locale)
+        all_items.extend(resp.data.data)
+        if page >= resp.data.last_page:
+            break
+        page += 1
+    return all_items

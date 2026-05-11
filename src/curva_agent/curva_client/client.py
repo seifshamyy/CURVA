@@ -118,12 +118,12 @@ class CurvaClient:
 
     async def get_clubs(self, *, limit: int = 200, page: int = 1, locale: str = "ar") -> ClubListResponse:
         return ClubListResponse.model_validate(
-            await self._request("POST", "/clubs", locale=locale, json={"limit": limit, "page": page})
+            await self._request("GET", "/clubs", locale=locale, params={"limit": limit, "page": page})
         )
 
     async def get_brands(self, *, limit: int = 200, page: int = 1, locale: str = "ar") -> BrandListResponse:
         return BrandListResponse.model_validate(
-            await self._request("POST", "/brands", locale=locale, json={"limit": limit, "page": page})
+            await self._request("GET", "/brands", locale=locale, params={"limit": limit, "page": page})
         )
 
     async def search_products(self, filters: dict[str, Any], *, locale: str = "ar") -> ProductListResponse:

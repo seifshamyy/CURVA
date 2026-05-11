@@ -22,8 +22,8 @@ async def test_sync_taxonomy_full_run_populates_snapshot():
     respx.get(f"{BASE}/categories").mock(return_value=httpx.Response(200, json=_read("categories_ar.json")))
     respx.get(f"{BASE}/seasons").mock(return_value=httpx.Response(200, json=_read("seasons.json")))
     respx.get(f"{BASE}/branches").mock(return_value=httpx.Response(200, json=_read("branches.json")))
-    respx.post(f"{BASE}/clubs").mock(return_value=httpx.Response(200, json=_read("clubs.json")))
-    respx.post(f"{BASE}/brands").mock(return_value=httpx.Response(200, json=_read("brands.json")))
+    respx.get(f"{BASE}/clubs").mock(return_value=httpx.Response(200, json=_read("clubs.json")))
+    respx.get(f"{BASE}/brands").mock(return_value=httpx.Response(200, json=_read("brands.json")))
     respx.get(f"{BASE}/categories").mock(return_value=httpx.Response(200, json=_read("categories_ar.json")))
 
     sup = StubSupabase()
@@ -47,8 +47,8 @@ async def test_sync_taxonomy_reports_partial_failure():
     respx.get(f"{BASE}/categories").mock(return_value=httpx.Response(503))
     respx.get(f"{BASE}/seasons").mock(return_value=httpx.Response(200, json=_read("seasons.json")))
     respx.get(f"{BASE}/branches").mock(return_value=httpx.Response(200, json=_read("branches.json")))
-    respx.post(f"{BASE}/clubs").mock(return_value=httpx.Response(200, json=_read("clubs.json")))
-    respx.post(f"{BASE}/brands").mock(return_value=httpx.Response(200, json=_read("brands.json")))
+    respx.get(f"{BASE}/clubs").mock(return_value=httpx.Response(200, json=_read("clubs.json")))
+    respx.get(f"{BASE}/brands").mock(return_value=httpx.Response(200, json=_read("brands.json")))
 
     sup = StubSupabase()
     repo = TaxonomyRepository(sup)
