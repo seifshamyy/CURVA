@@ -1,0 +1,23 @@
+{
+  "status": true,
+  "message": null,
+  "data": {
+    "current_page": 1,
+    "data": [
+      {"id": 26, "name": "الزمالك", "image": "https://curva-app.nyc3.cdn.digitaloceanspaces.com/assets/uploads/banners/42876626.webp?v=1", "orders": 2274, "type": "club", "supplier": "", "brand": null},
+      {"id": 40, "name": "برشلونة", "image": "https://curva-app.nyc3.cdn.digitaloceanspaces.com/assets/uploads/banners/barca.webp?v=1", "orders": 2039, "type": "club", "supplier": "", "brand": null},
+      {"id": 25, "name": "الأهلي", "image": "https://curva-app.nyc3.cdn.digitaloceanspaces.com/assets/uploads/banners/ahly.webp?v=1", "orders": 1496, "type": "club", "supplier": "", "brand": null},
+      {"id": 29, "name": "ريال مدريد", "image": "https://curva-app.nyc3.cdn.digitaloceanspaces.com/assets/uploads/banners/rma.webp?v=1", "orders": 942, "type": "club", "supplier": "", "brand": null}
+    ],
+    "first_page_url": "https://octane.curvaegypt.com/api/clubs?page=1",
+    "from": 1,
+    "last_page": 1,
+    "last_page_url": "https://octane.curvaegypt.com/api/clubs?page=1",
+    "next_page_url": null,
+    "path": "https://octane.curvaegypt.com/api/clubs",
+    "per_page": 200,
+    "prev_page_url": null,
+    "to": 4,
+    "total": 4
+  }
+}

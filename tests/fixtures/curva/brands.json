@@ -1,0 +1,23 @@
+{
+  "status": true,
+  "message": null,
+  "data": {
+    "current_page": 1,
+    "data": [
+      {"id": 14, "name": "أديداس", "image": "https://curva-app.nyc3.cdn.digitaloceanspaces.com/assets/uploads/banners/adidas.webp?v=1", "orders": 6483},
+      {"id": 8, "name": "نايكي", "image": "https://curva-app.nyc3.cdn.digitaloceanspaces.com/assets/uploads/banners/nike.webp?v=1", "orders": 6446},
+      {"id": 9, "name": "كورڤا", "image": "https://curva-app.nyc3.cdn.digitaloceanspaces.com/assets/uploads/banners/curva.webp?v=1", "orders": 3483},
+      {"id": 12, "name": "بوما", "image": "https://curva-app.nyc3.cdn.digitaloceanspaces.com/assets/uploads/banners/puma.webp?v=1", "orders": 2404}
+    ],
+    "first_page_url": "https://octane.curvaegypt.com/api/brands?page=1",
+    "from": 1,
+    "last_page": 1,
+    "last_page_url": "https://octane.curvaegypt.com/api/brands?page=1",
+    "next_page_url": null,
+    "path": "https://octane.curvaegypt.com/api/brands",
+    "per_page": 200,
+    "prev_page_url": null,
+    "to": 4,
+    "total": 4
+  }
+}
