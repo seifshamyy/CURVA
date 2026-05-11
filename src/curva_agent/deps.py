@@ -7,6 +7,8 @@ from curva_agent.curva_client.client import CurvaClient
 from curva_agent.llm.client import LLMClient
 from curva_agent.orchestrator.orchestrator import Orchestrator
 from curva_agent.supabase_client.client import get_supabase_client
+from curva_agent.supabase_client.logs import AgentLogsRepository
+from curva_agent.supabase_client.sessions import SessionRepository
 from curva_agent.supabase_client.taxonomy import TaxonomyRepository, TaxonomySnapshot
 from curva_agent.tools.base import Tool
 from curva_agent.tools.get_offers import GetOffersTool
@@ -98,6 +100,16 @@ async def get_orchestrator(
         model_name=settings.llm_model,
         max_iterations=settings.llm_max_tool_iterations,
     )
+
+
+async def get_session_repo() -> SessionRepository:
+    client = await get_supabase_client()
+    return SessionRepository(client)
+
+
+async def get_logs_repo() -> AgentLogsRepository:
+    client = await get_supabase_client()
+    return AgentLogsRepository(client)
 
 
 def reset_singletons_for_tests() -> None:
