@@ -12,6 +12,7 @@ from curva_agent.tools.base import Tool
 from curva_agent.tools.get_offers import GetOffersTool
 from curva_agent.tools.get_product import GetProductTool
 from curva_agent.tools.list_branches import ListBranchesTool
+from curva_agent.tools.product_synthesizer import ProductSynthesizerTool
 from curva_agent.tools.search_products import SearchProductsTool
 
 
@@ -80,6 +81,7 @@ async def get_tools(
             gp,
             GetOffersTool(curva=curva, cache=_caches["offers"]),
             ListBranchesTool(curva=curva, cache=_caches["branches"]),
+            ProductSynthesizerTool(get_product=gp, llm=build_llm_client()),
         ]
         _tools_by_name = {t.name: t for t in instances}
     return _tools_by_name
