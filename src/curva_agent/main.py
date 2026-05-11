@@ -62,8 +62,9 @@ async def admin_sync_taxonomy(
     log.info("sync_taxonomy_started", started_at=started_at)
     try:
         result = await sync_taxonomy(curva=curva, repo=repo)
-    finally:
-        await curva.aclose()
+    except Exception as e:
+        log.exception("sync_taxonomy_failed")
+        return {"ok": False, "counts": {}, "error": str(e), "started_at": started_at}
     log.info("sync_taxonomy_finished", ok=result.ok, counts=result.counts, error=result.error)
     return {"ok": result.ok, "counts": result.counts, "error": result.error, "started_at": started_at}
 
