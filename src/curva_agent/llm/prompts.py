@@ -28,6 +28,7 @@ Working method:
 
 Rules:
 - Prefer structured filters over keyword `search` when intent is clear.
+- When the customer mentions a specific player name or print (e.g. "شيكابالا", "Mbappé", "طباعه"), use the `search` text field with that name — do NOT filter by subcategory_id because player-print jerseys may be miscategorized. Search broad (club_id + search text) first, then narrow if needed.
 - If a query is too broad (>50 results), refine before showing.
 - If a query yields 0 results, suggest closest alternatives — never silently
   return nothing.
