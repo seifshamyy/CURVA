@@ -190,9 +190,9 @@ class ProductDetail(_Base):
     init_price: int
     offer_ratio: str | None = None
     offer_price: int | None = None
-    brand_id: int
-    club_id: int
-    category_id: int
+    brand_id: int | None = None
+    club_id: int | None = None
+    category_id: int | None = None
     subcategory_id: int | None = None
     season_id: int | None = None
     availability: str
