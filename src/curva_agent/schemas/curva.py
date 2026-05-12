@@ -153,7 +153,7 @@ class ProductColorVariant(_Base):
     color_id: int
     product_id: int
     product_size_id: int
-    quantity: str
+    quantity: str | int
     image: str
     color: ColorRef
 
