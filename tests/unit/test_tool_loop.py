@@ -110,3 +110,29 @@ async def test_unknown_tool_returns_error_to_llm():
     )
     assert result.tool_calls_made[0]["ok"] is False
     assert "unknown tool" in result.tool_calls_made[0]["error"].lower()
+
+
+@pytest.mark.asyncio
+async def test_invalid_tool_arguments_returns_structured_error():
+    """When the model sends args that fail Pydantic validation, the loop must
+    report a structured tool error back to the LLM rather than crashing."""
+    llm = AsyncMock()
+    llm.complete = AsyncMock(side_effect=[
+        LLMResponse(
+            text="",
+            tool_calls=[LLMToolCall(id="c1", name="echo", arguments={})],
+            finish_reason="tool_calls",
+            usage={},
+        ),
+        LLMResponse(text="ok", tool_calls=[], finish_reason="stop", usage={}),
+    ])
+    result = await run_tool_loop(
+        llm=llm,
+        system_blocks=[],
+        user_message="x",
+        tools={EchoTool().name: EchoTool()},
+        max_iterations=5,
+        locale="en",
+    )
+    assert result.tool_calls_made[0]["ok"] is False
+    assert "invalid arguments" in result.tool_calls_made[0]["error"].lower()

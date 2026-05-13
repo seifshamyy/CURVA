@@ -4,6 +4,7 @@ import time
 from dataclasses import dataclass, field
 from typing import Any
 import orjson
+from pydantic import ValidationError
 from curva_agent.llm.client import LLMClient, LLMMessage, LLMResponse, LLMToolCall
 from curva_agent.observability.logging import get_logger
 from curva_agent.tools.base import Tool
