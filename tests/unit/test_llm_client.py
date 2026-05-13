@@ -72,3 +72,14 @@ async def test_complete_sends_cache_control_in_system():
     system_msg = captured["messages"][0]
     assert system_msg["role"] == "system"
     assert system_msg["content"][0]["cache_control"] == {"type": "ephemeral"}
+
+
+@pytest.mark.asyncio
+async def test_aclose_closes_underlying_openai_client():
+    from unittest.mock import AsyncMock
+    from curva_agent.llm.client import LLMClient
+
+    fake_openai = AsyncMock()
+    llm = LLMClient(api_key="k", model="m", _client=fake_openai)
+    await llm.aclose()
+    fake_openai.close.assert_awaited_once()

@@ -35,8 +35,12 @@ async def lifespan(_: FastAPI):
     configure_logging(settings.log_level)
     log = get_logger("startup")
     log.info("service_starting", version=__version__, model=settings.llm_model)
-    yield
-    log.info("service_stopping")
+    try:
+        yield
+    finally:
+        log.info("service_stopping")
+        from curva_agent.deps import shutdown_singletons
+        await shutdown_singletons()
 
 
 app = FastAPI(title="Curva CS Agent", version=__version__, lifespan=lifespan)

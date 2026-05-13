@@ -118,3 +118,22 @@ def reset_singletons_for_tests() -> None:
     _caches = {}
     _tools_by_name = None
     _llm = None
+
+
+async def shutdown_singletons() -> None:
+    """Close any module-level singletons that own external resources.
+
+    Called from the FastAPI lifespan on shutdown. Safe to call when nothing
+    has been initialized — each branch is gated by a None check.
+    """
+    global _curva_client, _llm
+    if _curva_client is not None:
+        try:
+            await _curva_client.aclose()
+        finally:
+            _curva_client = None
+    if _llm is not None:
+        try:
+            await _llm.aclose()
+        finally:
+            _llm = None

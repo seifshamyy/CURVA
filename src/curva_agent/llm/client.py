@@ -49,6 +49,9 @@ class LLMClient:
             },
         )
 
+    async def aclose(self) -> None:
+        await self._client.close()
+
     async def complete(
         self,
         *,
